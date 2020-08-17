@@ -1,105 +1,98 @@
 <template>
     <div class="hello">
-        <!-- <h1>Your IP is {{ ip }}</h1> -->
-
         <div>
-            <select v-model="user.country" @change="computeState($event)">
-                <option v-for="country in countries" :key="country.id"> {{ country.name }}</option>
-            </select>
-            <select v-if="user.country !== ''" v-model='user.state'>
-                <option v-for="state in states" :key="state.id"> {{ state.name }}</option>
-            </select>
-            <!-- <select >
-                <option v-for="state in states" :key="id"> {{ country }}</option>
-            </select> -->
+            <ul>
+                <li>
+                    <input type="text" autocomplete="name" v-model="user.name">
+                </li>
+                <li>
+                    <select v-model="user.country" @changed="computeState">
+                        <option v-for="country in countries" :key="country.id" :value="country.name"> {{ country.name }}</option>
+                    </select>
+                </li>
+                <li>
+                    <select v-if="user.state !== ''" v-model='user.state' @changed="computeCity">
+                        <option v-for="state in states" :key="state.id" :value="state.name"> {{ state.name }}</option>
+                    </select>
+                </li>
+                <li>
+                    <select v-if="user.city !== ''" v-model='user.city' @changed="displayData">
+                        <option v-for="city in cities" :key="city.id" :value="city.name"> {{ city.name }}</option>
+                    </select>
+                </li>
+                <li v-if="done"> Name: <u> {{ name }} </u>, Country:  <u> {{ country }} </u>, State:  <u> {{ state }} </u>, City:  <u> {{ city }} </u>.</li>
+                <li>
+                    <button @click="hideData">Reset</button>
+                </li>
+            </ul>
         </div>
-        <!-- <input type="text" v-model="input.firstname" placeholder="Country" /><br /><br />
-        <input type="text" v-model="input.lastname" placeholder="State" /><br /><br />
-        <input type="text" v-model="input.lastname" placeholder="City" /><br /><br />
-        <button>Send</button>
-        <br />
-        <br />
-        <textarea>{{ response }}</textarea> -->
     </div>
 </template>
 <script>
    import axios from "axios";
-
     export default {
         name: 'HelloWorld',
         data () {
             return {
                 countries: [
-                    {name: '...'},
+                    {name: 'Loading...'},
                 ],
-
                 states: [
-                    {name: '...'},
+                    {name: 'Loading...'},
                 ],
-
                 cities: [
-                    {name: '...'},
+                    {name: 'Loading...'},
                 ],
-
+                done: false,
                 user: {
+                    name: '',
                     country: '',
                     state: '',
                     city: ''
                 }
-                // ip: "",
-                // input: {
-                //     firstname: "",
-                //     lastname: ""
-                // },
-                // response: ""
             }
         },
-        // beforeCreate(){
-        //     var $this = this;
-        //     axios.get('https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates%2Bcities.json')
-        //     .then(res => $this.countries = res.data)
-        // },
         beforeCreate() {
-            // var $this = this;
-           axios.get('https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates%2Bcities.json').then(response => (this.countries = response.data).catch(err => console.error(err))
-
+           axios.get('https://raw.githubusercontent.com/dr5hn/countries-states-cities-database/master/countries%2Bstates%2Bcities.json').then(response => (this.countries = response.data).catch(err => console.error("API Error", err))
             )
-
-            // console.log(countries)
-
         },
         methods: {
-          computeState ($event){
-            const selectedCountry = $event.target.value;
-            if (selectedCountry !){
-                //
-            }
-          }
+          computeState (){
+            this.states = this.countries.filter(country => country.name === this.user.country)[0].states;
+            },
+         computeCity (){
+            this.cities = this.states.filter(state => city.name === this.user.state)[0].cities;
+            },
+         displayData (){
+             this.done = true;
+         },
+         hideData (){
+             this.user.name = this.user.countries = this.user.city = this.user.state  =  '';
+             this.done = false;
+             alert("Start Over")
          }
+          }
     }
 </script>
-
 <style scoped>
     h1, h2 {
         font-weight: normal;
     }
-
     ul {
         list-style-type: none;
         padding: 0;
     }
-
     li {
         display: inline-block;
         margin: 0 10px;
     }
-
-    a {
-        color: #42b983;
+    a, button {
+        color: #42B983;
     }
-
-    textarea {
+    input, textarea{
         width: 600px;
+    }
+    textarea {
         height: 200px;
     }
 </style>
